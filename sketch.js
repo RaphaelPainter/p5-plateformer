@@ -4,8 +4,13 @@ let level = undefined;
 let drawRatio = 1;
 let levelIndex = 0;
 let COLORS = undefined;
+let wHeight = window.innerHeight
+let wWidth = window.innerWidth
 
 const GRAVITY = 0.02
+const FRICTION = 0.02
+const BOOST = 0.15
+const VELOCITY = 0.005
 
 class Level {
     constructor(index, height, width, data, image) {
@@ -21,7 +26,6 @@ class Level {
     getPixelColor(x, y) {
         const i = y * 4 * this.width + x * 4
         const data = this.data.data
-        console.log(i + ": "+data[i])
         return color(data[i], data[i + 1], data[i + 2], data[i + 3])
     }
 
@@ -43,7 +47,6 @@ class Level {
     }
 
     friction() {
-        const FRICTION = 0.02
         const position = this.player.position.copy()
         if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
             if (Math.abs(this.player.velocity.x) > FRICTION) {
@@ -55,7 +58,6 @@ class Level {
     }
 
     inputPressed() {
-        const BOOST = 0.15
         if (keyCode == 81) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
         }
@@ -73,7 +75,6 @@ class Level {
     }
 
     inputsHold() {
-        const VELOCITY = 0.005
         if (keyIsDown(81)) {
             this.player.velocity.x -= VELOCITY
         } else if (keyIsDown(68)) {
@@ -121,10 +122,10 @@ class Level {
 
     draw() {
         context.scale(drawRatio, drawRatio)
-        context.webkitImageSmoothingEnabled = false;
         context.mozImageSmoothingEnabled = false;
+        context.webkitImageSmoothingEnabled = false;
+        context.msImageSmoothingEnabled = false;
         context.imageSmoothingEnabled = false;
-
         image(this.image, 0, 0);
 
         //TODO: draw level overlay
@@ -174,16 +175,18 @@ async function prepareLevel(index) {
     const img = await loadImageSync(`levels/${index}.png`);
     image(img, 0, 0);
     const data = context.getImageData(0, 0, img.width, img.height);
+    console.log(data)
 
     // update current rendering ratio
-    drawRatio = windowHeight / img.height
+    drawRatio = wHeight / img.height
 
     return new Level(index, img.height, img.width, data, img)
 }
 
 async function setup() {
-    createCanvas(windowHeight, windowHeight);
+    createCanvas(wHeight, wHeight);
     context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
     level = await prepareLevel(levelIndex)
 
     COLORS = {
@@ -205,5 +208,5 @@ function draw() {
 }
 
 function windowResized() {
-    //resizeCanvas(windowHeight, windowHeight);
+    //resizeCanvas(wHeight, wHeight);
 }
