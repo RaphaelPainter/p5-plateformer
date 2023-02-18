@@ -12,7 +12,34 @@ const FRICTION = 0.03
 const BOOST = 0.15
 const VELOCITY = 0.005
 const JUMP = 0.4
-let PIXEL_TRIGGER_COLOR = 185
+
+let PIXEL_TRIGGER_COLOR_R = 185
+
+let TEXT_BACKGROUND_COLOR =  undefined
+let TEXT_FONT_COLOR = undefined
+
+let TEXT_BACKGROUND_COEF_X = 0.02
+let TEXT_BACKGROUND_COEF_Y_DOWN = 0.9
+let TEXT_BACKGROUND_COEF_WIDTH = 0.96
+let TEXT_BACKGROUND_COEF_HEIGHT = 0.08
+let TEXT_COEF_X = 0.04
+let TEXT_COEF_Y = 0.955
+let TEXT_COEF_Y_UP =  0.0725
+let TEXT_BACKGROUND_COEF_Y_UP = 0.02
+let TEXT_BACKGROUND_X =  undefined
+let TEXT_BACKGROUND_WIDTH =  undefined
+let TEXT_BACKGROUND_HEIGHT = undefined
+let TEXT_X = undefined
+
+let text_y_up =  undefined
+let text_background_y_up =  undefined
+let text_y_down =  undefined
+let text_background_y_down = undefined
+
+let text_background_y_coef = undefined
+let text_y_coef = undefined
+
+let UP_DOWN_TRESHOLD = 0.4
 
 
 class Level {
@@ -158,8 +185,35 @@ class Level {
         //TODO: draw level overlay
 
         this.player.draw()
+
+        //compute text and background position
+        TEXT_BACKGROUND_X = this.image.width * TEXT_BACKGROUND_COEF_X
+        TEXT_BACKGROUND_WIDTH = this.image.width * TEXT_BACKGROUND_COEF_WIDTH
+        TEXT_BACKGROUND_HEIGHT = this.image.height * TEXT_BACKGROUND_COEF_HEIGHT
+        TEXT_X = this.image.width * TEXT_COEF_X
+        if (text_background_y_coef == null) {
+            text_background_y_coef = TEXT_BACKGROUND_COEF_Y_DOWN
+        }
+        text_background_y_coef = this.player.position.y < this.image.height *UP_DOWN_TRESHOLD ? TEXT_BACKGROUND_COEF_Y_DOWN : text_background_y_coef
+        text_background_y_coef =  this.player.position.y > this.image.height*(1-UP_DOWN_TRESHOLD) ? TEXT_BACKGROUND_COEF_Y_UP : text_background_y_coef
+        if (text_y_coef == null) {
+            text_y_coef = TEXT_COEF_Y
+        }
+        text_y_coef = this.player.position.y < this.image.height *UP_DOWN_TRESHOLD ? TEXT_COEF_Y : text_y_coef
+        text_y_coef =  this.player.position.y > this.image.height*(1-UP_DOWN_TRESHOLD) ? TEXT_COEF_Y_UP : text_y_coef
+
+        text_background_y_down = this.image.height * text_background_y_coef
+        text_y_down = this.image.height * text_y_coef
+
+        fill(TEXT_BACKGROUND_COLOR);
+        rect(TEXT_BACKGROUND_X, text_background_y_down, TEXT_BACKGROUND_WIDTH, TEXT_BACKGROUND_HEIGHT)
+
+        fill(TEXT_FONT_COLOR);
+        text('Hello sir !',TEXT_X, text_y_down);//44 char max
     }
 }
+
+
 
 function keyPressed() {
     level.inputPressed()
@@ -225,6 +279,13 @@ async function setup() {
         'rgba(0,255,0,1)': 'start',
         'rgba(255,0,0,1)': 'end'
     }
+    
+    textSize(2);
+    gameFont = loadFont('fonts/webpixel bitmap_regular.otf');
+    textFont(gameFont);
+
+    TEXT_BACKGROUND_COLOR = color(50, 50, 50, 255)
+    TEXT_FONT_COLOR = color(250, 250, 250, 255)
 
     level = await prepareLevel(levelIndex)
 }
