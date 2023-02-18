@@ -20,8 +20,7 @@ class Level {
         this.width = width
         this.data = data
         this.image = image
-        this.player = new Player(createVector(10, 10), createVector(0, 0))
-        console.log(this.data.data)
+        this.player = new Player(this.getStartingPosition(), createVector(0, 0))
     }
 
     getPixelColor(x, y) {
@@ -33,6 +32,18 @@ class Level {
     getPixelContent(x, y) {
         const position = createVector(Math.round(x), Math.round(y))
         return COLORS[this.getPixelColor(position.x, position.y).toString()]
+    }
+
+    getStartingPosition(){
+        const data = this.data.data
+        for (let x = 0; x < this.width; x++) {
+            for (let y = 0; y < this.height; y++) {
+                if (this.getPixelContent(x, y) == 'start') {
+                    return createVector(x, y);
+                }
+            }
+        }
+        return createVector(10, 10);
     }
 
     gravity() {
@@ -176,7 +187,6 @@ async function prepareLevel(index) {
     const img = await loadImageSync(`levels/${index}.png`);
     image(img, 0, 0);
     const data = context.getImageData(0, 0, img.width, img.height);
-    console.log(data)
 
     // update current rendering ratio
     drawRatio = wHeight / img.height
@@ -188,7 +198,6 @@ async function setup() {
     createCanvas(wHeight, wHeight);
     context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
-    level = await prepareLevel(levelIndex)
 
     COLORS = {
         'rgba(255,255,255,1)': 'void',
@@ -196,6 +205,8 @@ async function setup() {
         'rgba(0,255,0,1)': 'start',
         'rgba(255,0,0,1)': 'end'
     }
+
+    level = await prepareLevel(levelIndex)
 }
 
 function keyPressed() {
