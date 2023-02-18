@@ -7,10 +7,11 @@ let COLORS = undefined;
 let wHeight = window.innerHeight
 let wWidth = window.innerWidth
 
-const GRAVITY = 0.02
-const FRICTION = 0.02
+const GRAVITY = 0.04
+const FRICTION = 0.03
 const BOOST = 0.15
 const VELOCITY = 0.005
+const JUMP = 0.4
 
 class Level {
     constructor(index, height, width, data, image) {
@@ -58,26 +59,26 @@ class Level {
     }
 
     inputPressed() {
-        if (keyCode == 81) {
+        if (keyCode == 37) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
         }
         
-        if (keyCode == 68) {
+        if (keyCode == 39) {
             this.player.velocity.x = Math.max(this.player.velocity.x, BOOST)
         }
 
         if (keyCode == 32) {
             const position = this.player.position.copy()
             if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
-                this.player.velocity.y = -0.3
+                this.player.velocity.y = -JUMP
             }
         }
     }
 
     inputsHold() {
-        if (keyIsDown(81)) {
+        if (keyIsDown(37)) {
             this.player.velocity.x -= VELOCITY
-        } else if (keyIsDown(68)) {
+        } else if (keyIsDown(39)) {
             this.player.velocity.x += VELOCITY
         } else {
             this.friction()
