@@ -12,6 +12,8 @@ const FRICTION = 0.03
 const BOOST = 0.15
 const VELOCITY = 0.005
 const JUMP = 0.4
+let PIXEL_TRIGGER_COLOR = 185
+
 
 class Level {
     constructor(index, height, width, data, image) {
@@ -24,15 +26,18 @@ class Level {
     }
 
     getPixelColor(x, y) {
+        x = Math.round(x)
+        y = Math.round(y)
         const i = y * 4 * this.width + x * 4
         const data = this.data.data
         return color(data[i], data[i + 1], data[i + 2], data[i + 3])
     }
 
     getPixelContent(x, y) {
-        const position = createVector(Math.round(x), Math.round(y))
-        return COLORS[this.getPixelColor(position.x, position.y).toString()]
+        return COLORS[this.getPixelColor(x, y).toString()]
     }
+
+
 
     getStartingPosition(){
         const data = this.data.data
@@ -69,6 +74,9 @@ class Level {
         }
     }
 
+
+
+
     inputPressed() {
         if (keyCode == 37) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
@@ -99,6 +107,13 @@ class Level {
     collisions() {
         const position = this.player.position.copy()
         const velocity = this.player.velocity.copy()
+
+        let collidingPixelColor = this.getPixelColor(position.x, position.y).levels
+        if (JSON.stringify(collidingPixelColor) != JSON.stringify(this.player.collidingPixelColor)) {
+            this.player.collidingPixelColor = collidingPixelColor
+            console.log(this.player.collidingPixelColor)
+            //TODO: display a dialog
+        }
         
         if (velocity.x > 0) {
             if (this.getPixelContent(position.x + 0.5, position.y) == 'ground') {
@@ -146,11 +161,16 @@ class Level {
     }
 }
 
+function keyPressed() {
+    level.inputPressed()
+}
+
 class Player {
     constructor(position, velocity) {
         this.position = position
         this.velocity = velocity
         this.color = color(255, 204, 0, 255)
+        this.collidingPixelColor = undefined
     }
 
     step() {
@@ -209,16 +229,11 @@ async function setup() {
     level = await prepareLevel(levelIndex)
 }
 
-function keyPressed() {
-    level.inputPressed()
-}
+
+
 
 function draw() {
     if (!level) return
     level.step()
     level.draw()
-}
-
-function windowResized() {
-    //resizeCanvas(wHeight, wHeight);
 }
