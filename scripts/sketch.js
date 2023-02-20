@@ -33,12 +33,39 @@ async function prepareLevel(index) {
     // load image and prepare level state
     const img = await loadImageSync(`levels/${index}.png`);
     image(img, 0, 0);
-    const data = context.getImageData(0, 0, img.width, img.height);
+    const c = document.createElement('canvas')
+    const ctx = c.getContext('2d')
+    ctx.drawImage(myImage, 0, 0)
+    const data = ctx.getImageData(0, 0, myImage.width, myImage.height)
+    image(img, 0, 0)
 
     // update current rendering ratio
     drawRatio = wHeight / img.height
 
     return new Level(index, img.height, img.width, data, img)
+}
+
+async function loadImageSync(source) {
+    return new Promise((resolve, reject) => {
+        loadImage(source, (img) => {
+            resolve(img)
+        })
+    })
+}
+
+const loadImageVanilla = async (img) => {
+    return new Promise((resolve, reject) => {
+        img.onload = async () => {
+            resolve(true)
+        }
+    })
+}
+let myImage
+async function preload() {
+    myImage = new Image()
+
+    myImage.src = 'levels/0.png'
+    await loadImageVanilla(myImage)
 }
 
 async function setup() {
@@ -68,3 +95,6 @@ function draw() {
     level.step()
     level.draw()
 }
+
+
+
