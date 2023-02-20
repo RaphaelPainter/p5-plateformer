@@ -66,14 +66,20 @@ class Level {
 
     //INPUTS
     inputPressed() {
+
+        //INTERRACTIONS
+        if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R && keyIsDown(32)) {
+            this.player.canMove = false
+            textToDisplay = "test2"
+        }
+
+        //MOVE
         if (keyCode == 37 && this.player.canMove) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
         }
-        
         if (keyCode == 39 && this.player.canMove) {
             this.player.velocity.x = Math.max(this.player.velocity.x, BOOST)
         }
-
         if (keyCode == 32 && this.player.canMove) {
             const position = this.player.position.copy()
             if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
@@ -100,11 +106,6 @@ class Level {
         if (JSON.stringify(collidingPixelColor) != JSON.stringify(this.player.collidingPixelColor)) {
             this.player.collidingPixelColor = collidingPixelColor
             console.log(this.player.collidingPixelColor)
-            //TODO: display a dialog
-            if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R) {
-                this.player.canMove = false
-                textToDisplay = "test"
-            }
         }
         
         if (velocity.x > 0) {

@@ -13,10 +13,17 @@ let TEXT_BACKGROUND_X =  undefined
 let TEXT_BACKGROUND_WIDTH =  undefined
 let TEXT_BACKGROUND_HEIGHT = undefined
 
+let STROKE_COLOR_R = 100
+let STROKE_COLOR_G = 100
+let STROKE_COLOR_B = 100
+let STROKE_WEIGHT = 0.75
+
 
 let UP_DOWN_TRESHOLD = 0.4
 
 let textToDisplay = "test"
+
+let TEXT_DISPLAY_SPEED = 1
 
 class Dialog {
     //INIT
@@ -61,10 +68,15 @@ class Dialog {
         this.text_y_coef =  playerPos.y > image.height*(1-UP_DOWN_TRESHOLD) ? TEXT_COEF_Y_UP : this.text_y_coef
         this.text_y = image.height * this.text_y_coef
 
+        //draw
+        stroke(STROKE_COLOR_R,STROKE_COLOR_G, STROKE_COLOR_B);
         if (textToDisplay !== "") {
+            
+            strokeWeight(STROKE_WEIGHT);
             fill(TEXT_BACKGROUND_COLOR);
             rect(TEXT_BACKGROUND_X,  this.textBackground_y, TEXT_BACKGROUND_WIDTH, TEXT_BACKGROUND_HEIGHT)
 
+            noStroke()
             fill(TEXT_FONT_COLOR);
             text(textToDisplay,this.text_x, this.text_y);
         }
