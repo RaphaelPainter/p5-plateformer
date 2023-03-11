@@ -1,4 +1,10 @@
 
+let key_jump = [32];
+let key_left = [37];
+let key_right = [39];
+let key_talk = [87];
+
+
 class Level {
     //INIT
     constructor(index, height, width, data, image) {
@@ -8,8 +14,7 @@ class Level {
         this.data = data
         this.image = image
         this.player = new Player(this.getStartingPosition(), createVector(0, 0))
-        console.log(image)
-        this.dialog = new Dialog(this.image)
+        this.dialogSystem = new DialogSystem(this.image)
     }
     getStartingPosition(){
         const data = this.data.data
@@ -66,21 +71,29 @@ class Level {
 
     //INPUTS
     inputPressed() {
-
         //INTERRACTIONS
-        if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R && keyIsDown(32)) {
-            this.player.canMove = false
-            textToDisplay = "test2"
+        if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R && keyIsDown(87)) {
+            if (!this.dialogSystem.dialog) {
+                this.dialogSystem.dialog = new Dialog(["1", "2","3"])
+            }
+            if (this.dialogSystem.isLastLine()) {
+                this.player.canMove = true
+                console.log("move")
+            } else {
+                this.player.canMove = false
+                textToDisplay = this.dialogSystem.nextLine()
+                this.dialogSystem.resetIfLastLine()
+            }
         }
 
         //MOVE
-        if (keyCode == 37 && this.player.canMove) {
+        if (key_left.includes(keyCode) && this.player.canMove) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
         }
-        if (keyCode == 39 && this.player.canMove) {
+        if (key_right.includes(keyCode) && this.player.canMove) {
             this.player.velocity.x = Math.max(this.player.velocity.x, BOOST)
         }
-        if (keyCode == 32 && this.player.canMove) {
+        if (key_jump.includes(keyCode) && this.player.canMove) {
             const position = this.player.position.copy()
             if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
                 this.player.velocity.y = -JUMP
@@ -88,6 +101,7 @@ class Level {
         }
     }
     inputsHold() {
+        //TODO: change to generic input managing
         if (keyIsDown(37) && this.player.canMove) {
             this.player.velocity.x -= VELOCITY
         } else if (keyIsDown(39) && this.player.canMove) {
@@ -145,7 +159,7 @@ class Level {
         //TODO: draw level overlay
 
         this.player.draw()
-        this.dialog.draw(this.player.position, this.image)
+        this.dialogSystem.draw(this.player.position, this.image)
     }
 
 }
