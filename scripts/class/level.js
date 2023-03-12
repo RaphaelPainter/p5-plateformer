@@ -1,5 +1,5 @@
 
-let key_jump = [32];
+let key_jump = [32, 16];
 let key_left = [37];
 let key_right = [39];
 let key_talk = [87];
@@ -74,15 +74,14 @@ class Level {
         //INTERRACTIONS
         if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R && keyIsDown(87)) {
             if (!this.dialogSystem.dialog) {
-                this.dialogSystem.dialog = new Dialog(["1", "2","3"])
+                this.dialogSystem.dialog = new Dialog(["looooooooong text", "looooooooong text","looooooooong text"])
             }
             if (this.dialogSystem.isLastLine()) {
                 this.player.canMove = true
-                console.log("move")
+                this.dialogSystem.resetLine()
             } else {
                 this.player.canMove = false
-                textToDisplay = this.dialogSystem.nextLine()
-                this.dialogSystem.resetIfLastLine()
+                this.dialogSystem.nextLine()
             }
         }
 
@@ -119,7 +118,6 @@ class Level {
         let collidingPixelColor = this.getPixelColor(position.x, position.y).levels
         if (JSON.stringify(collidingPixelColor) != JSON.stringify(this.player.collidingPixelColor)) {
             this.player.collidingPixelColor = collidingPixelColor
-            console.log(this.player.collidingPixelColor)
         }
         
         if (velocity.x > 0) {

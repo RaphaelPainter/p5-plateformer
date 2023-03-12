@@ -21,14 +21,14 @@ let STROKE_WEIGHT = 0.75
 
 let UP_DOWN_TRESHOLD = 0.4
 
-let textToDisplay = "test"
+let DELAY_BETWEEN_CHAR_DISPLAY = 50
+let STARTING_INDEX = -1
 
-let TEXT_DISPLAY_SPEED = 1
+
 
 class DialogSystem {
     //INIT
     constructor(image) {
-        console.log("new dialog")
         this.textBackground_x =  image.width * TEXT_BACKGROUND_COEF_X
         this.textBackground_width =  image.width * TEXT_BACKGROUND_COEF_WIDTH
         this.textBackground_height =  image.height * TEXT_BACKGROUND_COEF_HEIGHT
@@ -40,17 +40,18 @@ class DialogSystem {
         this.textBackground_y_coef = undefined
         this.text_y_coef = undefined
         this.dialog = undefined
-        this.index = -1
+        this.index = STARTING_INDEX
+        this.charIndex = 0
+        this.charInterval =  undefined
     }
 
-    resetIfLastLine() {
-        if (this.index >= this.dialog.lines.length) {
-            this.index = -1
-        }
+    resetLine() {
+        this.index = STARTING_INDEX
     }
 
     isLastLine() {
-        if (this.index >= this.dialog.lines.length) {
+        if (this.index >= this.dialog.lines.length - 1
+        &&  this.charIndex >= this.dialog.lines[this.index].length) {
             return true
          } else {
              return false
@@ -58,9 +59,20 @@ class DialogSystem {
     }
 
     nextLine() {
-        this.index = this.index + 1
-        console.log(this.index)
-        return this.dialog.lines[this.index]
+        let context = this
+        if (this.charInterval != null) {
+             clearInterval(this.charInterval);
+        }
+        if (this.index != STARTING_INDEX && this.charIndex < this.dialog.lines[this.index].length) {
+            this.charIndex = this.dialog.lines[this.index].length
+        } else {
+            this.index = this.index + 1
+            this.charIndex = 0
+            this.charInterval = setInterval(
+                function () {
+                    context.charIndex++
+                }, DELAY_BETWEEN_CHAR_DISPLAY);
+        }
     }
 
     //DRAW
@@ -92,16 +104,16 @@ class DialogSystem {
         this.text_y = image.height * this.text_y_coef
 
         //draw
-        stroke(STROKE_COLOR_R,STROKE_COLOR_G, STROKE_COLOR_B);
-        if (textToDisplay !== "") {
-            
+        stroke(STROKE_COLOR_R, STROKE_COLOR_G, STROKE_COLOR_B);
+        if (this.dialog && this.index != STARTING_INDEX && this.dialog.lines[this.index] !== "") {
             strokeWeight(STROKE_WEIGHT);
             fill(TEXT_BACKGROUND_COLOR);
             rect(TEXT_BACKGROUND_X,  this.textBackground_y, TEXT_BACKGROUND_WIDTH, TEXT_BACKGROUND_HEIGHT)
 
             noStroke()
             fill(TEXT_FONT_COLOR);
-            text(textToDisplay,this.text_x, this.text_y);
+            text(this.dialog.lines[this.index].substring(0, this.charIndex)
+                , this.text_x, this.text_y);
         }
     }
 }
