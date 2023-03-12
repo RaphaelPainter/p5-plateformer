@@ -1,4 +1,3 @@
-
 let key_jump = [32, 16];
 let key_left = [37];
 let key_right = [39];
@@ -57,6 +56,12 @@ class Level {
         if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
             if (Math.abs(this.player.velocity.x) > FRICTION) {
                 this.player.velocity.x -= Math.sign(this.player.velocity.x) * FRICTION
+            } else {
+                this.player.velocity.x = 0
+            }
+        } else {
+            if (Math.abs(this.player.velocity.x) > AIR_FRICTION) {
+                this.player.velocity.x -= Math.sign(this.player.velocity.x) * AIR_FRICTION
             } else {
                 this.player.velocity.x = 0
             }

@@ -8,7 +8,9 @@ let wHeight = window.innerHeight
 let wWidth = window.innerWidth
 
 const GRAVITY = 0.04
-const FRICTION = 0.03
+const FRICTION = 0.05
+const AIR_FRICTION = 0.006
+
 const BOOST = 0.15
 const VELOCITY = 0.005
 const JUMP = 0.4
