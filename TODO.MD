@@ -8,8 +8,12 @@
 
 # dev 
 
-- passer d'un tableau à l'autre (nord, sud, ouest, est)
-- dialog: afficher les lettres progressivement
+- stocker les dialogues dans l'image
+- afficher le joueur 
+- afficher les décors derrière le joueur
+- afficher les décors devant le joueur
+- afficher les pnj derrière le joueur et devant les décors
+- navigation: passer d'un tableau à l'autre (nord, sud, ouest, est)
 
 
 # RPG
