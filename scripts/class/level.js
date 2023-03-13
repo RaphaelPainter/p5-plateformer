@@ -2,7 +2,8 @@ let key_jump = [32, 16];
 let key_left = [37];
 let key_right = [39];
 let key_talk = [87];
-
+let json
+let dialogContext = undefined;
 
 class Level {
     //INIT
@@ -14,6 +15,7 @@ class Level {
         this.image = image
         this.player = new Player(this.getStartingPosition(), createVector(0, 0))
         this.dialogSystem = new DialogSystem(this.image)
+        dialogContext = this;
     }
     getStartingPosition(){
         const data = this.data.data
@@ -74,14 +76,16 @@ class Level {
         this.gravity()
     }
 
+    
+
     //INPUTS
-    inputPressed() {
+    async inputPressed() {
         //INTERRACTIONS
         if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R && keyIsDown(87)) {
             if (!this.dialogSystem.dialog) {
-                this.dialogSystem.dialog = new Dialog(["looooooooong text", "looooooooong text","looooooooong text"])
+                json =  loadJSON('./dialogs/test.json', jsonCallback)
             }
-            if (this.dialogSystem.isLastLine()) {
+            else if (this.dialogSystem.isLastLine()) {
                 this.player.canMove = true
                 this.dialogSystem.resetLine()
             } else {
@@ -164,5 +168,10 @@ class Level {
         this.player.draw()
         this.dialogSystem.draw(this.player.position, this.image)
     }
-
 }
+
+function jsonCallback(mynewdata) {
+    dialogContext.dialogSystem.dialog = new Dialog(mynewdata.dialog)
+}
+
+
