@@ -1,9 +1,9 @@
-let key_jump = [32, 16];
-let key_left = [37];
-let key_right = [39];
-let key_talk = [87];
+let key_jump = [32, 16]
+let key_left = [37]
+let key_right = [39]
+let key_talk = [87]
 let json
-let dialogContext = undefined;
+let dialogContext = undefined
 
 class Level {
     //INIT
@@ -15,18 +15,18 @@ class Level {
         this.image = image
         this.player = new Player(this.getStartingPosition(), createVector(0, 0))
         this.dialogSystem = new DialogSystem(this.image)
-        dialogContext = this;
+        dialogContext = this
     }
-    getStartingPosition(){
+    getStartingPosition() {
         const data = this.data.data
         for (let x = 0; x < this.width; x++) {
             for (let y = 0; y < this.height; y++) {
                 if (this.getPixelContent(x, y) == 'start') {
-                    return createVector(x, y);
+                    return createVector(x, y)
                 }
             }
         }
-        return createVector(10, 10);
+        return createVector(10, 10)
     }
 
     //IMAGE DATA
@@ -46,7 +46,10 @@ class Level {
         const position = this.player.position.copy()
         position.y += 1
 
-        const clamped = createVector(Math.round(position.x), Math.round(position.y))
+        const clamped = createVector(
+            Math.round(position.x),
+            Math.round(position.y)
+        )
         const content = this.getPixelContent(clamped.x, clamped.y)
 
         if (content != 'ground') {
@@ -57,40 +60,41 @@ class Level {
         const position = this.player.position.copy()
         if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
             if (Math.abs(this.player.velocity.x) > FRICTION) {
-                this.player.velocity.x -= Math.sign(this.player.velocity.x) * FRICTION
+                this.player.velocity.x -=
+                    Math.sign(this.player.velocity.x) * FRICTION
             } else {
                 this.player.velocity.x = 0
             }
         } else {
             if (Math.abs(this.player.velocity.x) > AIR_FRICTION) {
-                this.player.velocity.x -= Math.sign(this.player.velocity.x) * AIR_FRICTION
+                this.player.velocity.x -=
+                    Math.sign(this.player.velocity.x) * AIR_FRICTION
             } else {
                 this.player.velocity.x = 0
             }
         }
     }
-     step() {
+    step() {
         this.inputsHold()
         this.player.step()
         this.collisions()
         this.gravity()
     }
 
-    
-
     //INPUTS
     async inputPressed() {
         //INTERRACTIONS
-        if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R && keyIsDown(87)) {
-            if (!this.dialogSystem.dialog) {
-                json =  loadJSON('./dialogs/test.json', jsonCallback)
-            }
-            else if (this.dialogSystem.isLastLine()) {
-                this.player.canMove = true
-                this.dialogSystem.resetLine()
-            } else {
+        if (
+            this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R &&
+            keyIsDown(87)
+        ) {
+            if (this.dialogSystem.dialog && !this.dialogSystem.isLastLine()) {
                 this.player.canMove = false
                 this.dialogSystem.nextLine()
+            } else {
+                console.log('last')
+                this.player.canMove = true
+                this.dialogSystem.resetLine()
             }
         }
 
@@ -103,7 +107,9 @@ class Level {
         }
         if (key_jump.includes(keyCode) && this.player.canMove) {
             const position = this.player.position.copy()
-            if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
+            if (
+                this.getPixelContent(position.x, position.y + 0.5) == 'ground'
+            ) {
                 this.player.velocity.y = -JUMP
             }
         }
@@ -124,44 +130,69 @@ class Level {
         const position = this.player.position.copy()
         const velocity = this.player.velocity.copy()
 
-        let collidingPixelColor = this.getPixelColor(position.x, position.y).levels
-        if (JSON.stringify(collidingPixelColor) != JSON.stringify(this.player.collidingPixelColor)) {
+        let collidingPixelColor = this.getPixelColor(
+            position.x,
+            position.y
+        ).levels
+        if (
+            JSON.stringify(collidingPixelColor) !=
+            JSON.stringify(this.player.collidingPixelColor)
+        ) {
             this.player.collidingPixelColor = collidingPixelColor
         }
-        
+
         if (velocity.x > 0) {
-            if (this.getPixelContent(position.x + 0.5, position.y) == 'ground') {
+            if (
+                this.getPixelContent(position.x + 0.5, position.y) == 'ground'
+            ) {
                 this.player.position.x = Math.floor(this.player.position.x)
                 this.player.velocity.x = 0
             }
         } else {
-            if (this.getPixelContent(position.x - 0.5, position.y) == 'ground') {
+            if (
+                this.getPixelContent(position.x - 0.5, position.y) == 'ground'
+            ) {
                 this.player.position.x = Math.ceil(this.player.position.x)
                 this.player.velocity.x = 0
             }
         }
 
         if (velocity.y > 0) {
-            if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
+            if (
+                this.getPixelContent(position.x, position.y + 0.5) == 'ground'
+            ) {
                 this.player.position.y = Math.floor(this.player.position.y)
                 this.player.velocity.y = 0
             }
         } else {
-            if (this.getPixelContent(position.x, position.y - 0.5) == 'ground') {
+            if (
+                this.getPixelContent(position.x, position.y - 0.5) == 'ground'
+            ) {
                 this.player.position.y = Math.ceil(this.player.position.y)
                 this.player.velocity.y = 0
             }
+        }
+        //LOAD DIALOG
+        if (
+            this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R &&
+            (!this.dialogSystem.currentDialogId ||
+                this.dialogSystem.currentDialogId !=
+                    this.player.collidingPixelColor[1])
+        ) {
+            let dialogId = this.player.collidingPixelColor[1]
+            this.dialogSystem.currentDialogId = dialogId
+            loadJSON('./dialogs/' + dialogId + '.json', jsonCallback)
         }
     }
 
     //DRAW
     draw() {
         context.scale(drawRatio, drawRatio)
-        context.mozImageSmoothingEnabled = false;
-        context.webkitImageSmoothingEnabled = false;
-        context.msImageSmoothingEnabled = false;
-        context.imageSmoothingEnabled = false;
-        image(this.image, 0, 0);
+        context.mozImageSmoothingEnabled = false
+        context.webkitImageSmoothingEnabled = false
+        context.msImageSmoothingEnabled = false
+        context.imageSmoothingEnabled = false
+        image(this.image, 0, 0)
 
         //TODO: draw level overlay
 
@@ -170,8 +201,6 @@ class Level {
     }
 }
 
-function jsonCallback(mynewdata) {
+async function jsonCallback(mynewdata) {
     dialogContext.dialogSystem.dialog = new Dialog(mynewdata.dialog)
 }
-
-
