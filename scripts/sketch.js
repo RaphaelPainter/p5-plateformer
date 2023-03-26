@@ -7,6 +7,8 @@ let COLORS = undefined
 let wHeight = window.innerHeight
 let wWidth = window.innerWidth
 
+let hitboxCanvas = undefined
+
 const GRAVITY = 0.04
 const FRICTION = 0.05
 const AIR_FRICTION = 0.006
@@ -21,23 +23,15 @@ function keyPressed() {
     level.inputPressed()
 }
 
-async function loadImageSync(source) {
-    return new Promise((resolve, reject) => {
-        loadImage(source, (img) => {
-            resolve(img)
-        })
-    })
-}
-
 async function prepareLevel(index) {
     // load image and prepare level state
-    const img = await loadImageSync(`levels/${index}.png`)
-    image(img, 0, 0)
+    img = await loadImageSync(`levels/${index}.png`)
+    //image(img, 0, 0)
     const c = document.createElement('canvas')
     const ctx = c.getContext('2d')
     ctx.drawImage(myImage, 0, 0)
     const data = ctx.getImageData(0, 0, myImage.width, myImage.height)
-    image(img, 0, 0)
+    //image(img, 0, 0)
 
     // update current rendering ratio
     drawRatio = wHeight / img.height
@@ -69,7 +63,7 @@ async function preload() {
 }
 
 async function setup() {
-    createCanvas(wHeight, wHeight)
+    hitboxCanvas = createCanvas(wHeight, wHeight)
     context = canvas.getContext('2d')
     context.clearRect(0, 0, canvas.width, canvas.height)
 

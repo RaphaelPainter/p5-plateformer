@@ -179,6 +179,7 @@ class Level {
                 this.dialogSystem.currentDialogId !=
                     this.player.collidingPixelColor[1])
         ) {
+            moveToTableau(this)
             let dialogId = this.player.collidingPixelColor[1]
             this.dialogSystem.currentDialogId = dialogId
             loadJSON('./dialogs/' + dialogId + '.json', jsonCallback)
@@ -203,4 +204,24 @@ class Level {
 
 async function jsonCallback(mynewdata) {
     dialogContext.dialogSystem.dialog = new Dialog(mynewdata.dialog)
+}
+
+async function moveToTableau(context) {
+    console.log('moveToTableau')
+
+    //CHANGE TABLEAU DISPLAYED
+    context.image = await new Promise((resolve, reject) => {
+        loadImage(`levels/1.png`, (img) => {
+            resolve(img)
+        })
+    })
+    const c = document.createElement('canvas')
+    const ctx = c.getContext('2d')
+
+    //CHANGE TABLEAU HITBOX
+    myImage = new Image()
+    myImage.src = `levels/1.png`
+    await loadImageVanilla(myImage)
+    ctx.drawImage(myImage, 0, 0)
+    context.data = ctx.getImageData(0, 0, myImage.width, myImage.height)
 }
