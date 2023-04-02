@@ -17,7 +17,9 @@ const BOOST = 0.15
 const VELOCITY = 0.005
 const JUMP = 0.4
 
-let PIXEL_TRIGGER_COLOR_R = 185
+let PIXEL_TRIGGER_DIALOG = 185 //dialogs
+let PIXEL_TRIGGER_ADJACENT_MOVEMENT = 1 //adjacentMovement
+let PIXEL_TRIGGER_ACTION = 2 //actions
 
 function keyPressed() {
     level.inputPressed()
@@ -25,7 +27,7 @@ function keyPressed() {
 
 async function prepareLevel(index) {
     // load image and prepare level state
-    img = await loadImageSync(`levels/${index}.png`)
+    img = await loadImageSync(`levels/0*0.png`)
     //image(img, 0, 0)
     const c = document.createElement('canvas')
     const ctx = c.getContext('2d')
@@ -58,7 +60,7 @@ let myImage
 async function preload() {
     myImage = new Image()
 
-    myImage.src = 'levels/0.png'
+    myImage.src = `levels/0*0.png`
     await loadImageVanilla(myImage)
 }
 

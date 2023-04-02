@@ -5,6 +5,9 @@ let key_talk = [87]
 let json
 let dialogContext = undefined
 
+let levelX = 0
+let levelY = 0
+
 class Level {
     //INIT
     constructor(index, height, width, data, image) {
@@ -85,7 +88,7 @@ class Level {
     async inputPressed() {
         //INTERRACTIONS
         if (
-            this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R &&
+            this.player.collidingPixelColor[0] == PIXEL_TRIGGER_DIALOG &&
             keyIsDown(87)
         ) {
             if (this.dialogSystem.dialog && !this.dialogSystem.isLastLine()) {
@@ -173,16 +176,40 @@ class Level {
             }
         }
         //LOAD DIALOG
+        let levelContext = this
         if (
-            this.player.collidingPixelColor[0] == PIXEL_TRIGGER_COLOR_R &&
+            this.player.collidingPixelColor[0] == PIXEL_TRIGGER_DIALOG &&
             (!this.dialogSystem.currentDialogId ||
                 this.dialogSystem.currentDialogId !=
                     this.player.collidingPixelColor[1])
         ) {
-            moveToTableau(this)
             let dialogId = this.player.collidingPixelColor[1]
             this.dialogSystem.currentDialogId = dialogId
             loadJSON('./dialogs/' + dialogId + '.json', jsonCallback)
+        } else if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_ACTION) {
+            console.log(this.player.collidingPixelColor)
+            let actionId = this.player.collidingPixelColor[3]
+            loadJSON(
+                './actions/' + actionId + '.json',
+                async function (mynewdata) {
+                    interpretAction(
+                        mynewdata,
+                        levelContext,
+                        levelContext.player.collidingPixelColor[1],
+                        levelContext.player.collidingPixelColor[2]
+                    )
+                }
+            )
+        } else if (
+            this.player.collidingPixelColor[0] ==
+            PIXEL_TRIGGER_ADJACENT_MOVEMENT
+        ) {
+            console.log(levelContext.player.collidingPixelColor)
+            interpretAdjacentMovement(
+                levelContext,
+                levelContext.player.collidingPixelColor[1],
+                levelContext.player.collidingPixelColor[2]
+            )
         }
     }
 
@@ -204,24 +231,4 @@ class Level {
 
 async function jsonCallback(mynewdata) {
     dialogContext.dialogSystem.dialog = new Dialog(mynewdata.dialog)
-}
-
-async function moveToTableau(context) {
-    console.log('moveToTableau')
-
-    //CHANGE TABLEAU DISPLAYED
-    context.image = await new Promise((resolve, reject) => {
-        loadImage(`levels/1.png`, (img) => {
-            resolve(img)
-        })
-    })
-    const c = document.createElement('canvas')
-    const ctx = c.getContext('2d')
-
-    //CHANGE TABLEAU HITBOX
-    myImage = new Image()
-    myImage.src = `levels/1.png`
-    await loadImageVanilla(myImage)
-    ctx.drawImage(myImage, 0, 0)
-    context.data = ctx.getImageData(0, 0, myImage.width, myImage.height)
 }
