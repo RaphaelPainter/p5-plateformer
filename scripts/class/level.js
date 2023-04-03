@@ -95,7 +95,6 @@ class Level {
                 this.player.canMove = false
                 this.dialogSystem.nextLine()
             } else {
-                console.log('last')
                 this.player.canMove = true
                 this.dialogSystem.resetLine()
             }
@@ -204,7 +203,6 @@ class Level {
             this.player.collidingPixelColor[0] ==
             PIXEL_TRIGGER_ADJACENT_MOVEMENT
         ) {
-            console.log(levelContext.player.collidingPixelColor)
             interpretAdjacentMovement(
                 levelContext,
                 levelContext.player.collidingPixelColor[1],
