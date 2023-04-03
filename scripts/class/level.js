@@ -176,6 +176,7 @@ class Level {
         }
         //LOAD DIALOG
         let levelContext = this
+        //TODO: let's add a CASE here !!
         if (
             this.player.collidingPixelColor[0] == PIXEL_TRIGGER_DIALOG &&
             (!this.dialogSystem.currentDialogId ||
@@ -200,6 +201,7 @@ class Level {
                 }
             )
         } else if (
+            //TOGGLE ADJACENT MOVEMENT
             this.player.collidingPixelColor[0] ==
             PIXEL_TRIGGER_ADJACENT_MOVEMENT
         ) {

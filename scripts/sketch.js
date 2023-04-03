@@ -59,7 +59,6 @@ const loadImageVanilla = async (img) => {
 let myImage
 async function preload() {
     myImage = new Image()
-
     myImage.src = `levels/0*0.png`
     await loadImageVanilla(myImage)
 }
