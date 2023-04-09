@@ -18,8 +18,9 @@ const VELOCITY = 0.005
 const JUMP = 0.4
 
 let PIXEL_TRIGGER_DIALOG = 185 //dialogs
-let PIXEL_TRIGGER_ADJACENT_MOVEMENT = 1 //adjacentMovement
-let PIXEL_TRIGGER_ACTION = 2 //actions
+let PIXEL_TRIGGER_ACTION = 2
+
+let PIXEL_TRIGGER_SUBACTION_RELATIVE_MOVEMENT = 110
 
 function keyPressed() {
     level.inputPressed()

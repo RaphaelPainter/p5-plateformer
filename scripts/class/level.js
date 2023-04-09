@@ -174,6 +174,8 @@ class Level {
                 this.player.velocity.y = 0
             }
         }
+        console.log(this.player.collidingPixelColor)
+
         //LOAD DIALOG
         let levelContext = this
         //TODO: let's add a CASE here !!
@@ -187,29 +189,15 @@ class Level {
             this.dialogSystem.currentDialogId = dialogId
             loadJSON('./dialogs/' + dialogId + '.json', jsonCallback)
         } else if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_ACTION) {
-            console.log(this.player.collidingPixelColor)
-            let actionId = this.player.collidingPixelColor[3]
-            loadJSON(
-                './actions/' + actionId + '.json',
-                async function (mynewdata) {
-                    interpretAction(
-                        mynewdata,
-                        levelContext,
-                        levelContext.player.collidingPixelColor[1],
-                        levelContext.player.collidingPixelColor[2]
-                    )
-                }
-            )
-        } else if (
-            //TOGGLE ADJACENT MOVEMENT
-            this.player.collidingPixelColor[0] ==
-            PIXEL_TRIGGER_ADJACENT_MOVEMENT
-        ) {
-            interpretAdjacentMovement(
-                levelContext,
-                levelContext.player.collidingPixelColor[1],
-                levelContext.player.collidingPixelColor[2]
-            )
+            if (
+                this.player.collidingPixelColor[1] ==
+                PIXEL_TRIGGER_SUBACTION_RELATIVE_MOVEMENT
+            ) {
+                interpretAdjacentMovement(
+                    levelContext,
+                    levelContext.player.collidingPixelColor[2]
+                )
+            }
         }
     }
 

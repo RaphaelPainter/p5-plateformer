@@ -1,11 +1,16 @@
-let NEUTRAL_POSITION = 100
+let NEUTRAL_POSITION = 0
+let thislevelContext
 
-function interpretAdjacentMovement(levelContext, param1, param2) {
-    MoveToAdjacentScreen(levelContext, param1, param2)
+function interpretAdjacentMovement(levelContext, jsonID) {
+    thislevelContext = levelContext
+    loadJSON(
+        './actions/' + jsonID + '.json',
+        jsonCallback_interpretAdjacentMovement
+    )
 }
 
-function movePlayerOnScreen(player, x, y) {
-    player.position = createVector(x, y)
+async function jsonCallback_interpretAdjacentMovement(mynewdata) {
+    MoveToAdjacentScreen(thislevelContext, mynewdata.x, mynewdata.y)
 }
 
 async function MoveToAdjacentScreen(levelContext, x, y) {
@@ -23,6 +28,13 @@ async function MoveToAdjacentScreen(levelContext, x, y) {
             levelContext.player,
             level.width - 1,
             levelContext.player.position.y
+        )
+        changeTableau = true
+    } else if (levelContext.player.velocity.y > 0 && y < NEUTRAL_POSITION) {
+        movePlayerOnScreen(
+            levelContext.player,
+            levelContext.player.position.x,
+            0
         )
         changeTableau = true
     }
@@ -51,5 +63,9 @@ async function MoveToAdjacentScreen(levelContext, x, y) {
             myImage.height
         )
         levelX = levelX + x - NEUTRAL_POSITION
+    }
+
+    function movePlayerOnScreen(player, x, y) {
+        player.position = createVector(x, y)
     }
 }
