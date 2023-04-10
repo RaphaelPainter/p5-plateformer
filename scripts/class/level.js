@@ -174,7 +174,7 @@ class Level {
                 this.player.velocity.y = 0
             }
         }
-        console.log(this.player.collidingPixelColor)
+        //console.log(this.player.collidingPixelColor)
 
         //LOAD DIALOG
         let levelContext = this

@@ -4,7 +4,7 @@ let thislevelContext
 function interpretAdjacentMovement(levelContext, jsonID) {
     thislevelContext = levelContext
     loadJSON(
-        './actions/' + jsonID + '.json',
+        './actions/adjacentMovement/' + jsonID + '.json',
         jsonCallback_interpretAdjacentMovement
     )
 }
@@ -15,7 +15,6 @@ async function jsonCallback_interpretAdjacentMovement(mynewdata) {
 
 async function MoveToAdjacentScreen(levelContext, x, y) {
     let changeTableau = false
-
     if (levelContext.player.velocity.x > 0 && x > NEUTRAL_POSITION) {
         movePlayerOnScreen(
             levelContext.player,
@@ -37,23 +36,28 @@ async function MoveToAdjacentScreen(levelContext, x, y) {
             0
         )
         changeTableau = true
+    } else if (levelContext.player.velocity.y > 0 && y > NEUTRAL_POSITION) {
+        movePlayerOnScreen(
+            levelContext.player,
+            levelContext.player.position.x,
+            level.height - 2
+        )
+        changeTableau = true
+        levelContext.player.velocity.y = -JUMP
     }
     if (changeTableau) {
         //CHANGE TABLEAU DISPLAYED
         levelContext.image = await new Promise((resolve, reject) => {
-            loadImage(
-                `levels/${levelX + x - NEUTRAL_POSITION}*${y}.png`,
-                (img) => {
-                    resolve(img)
-                }
-            )
+            loadImage(`levels/${levelX + x}*${levelY + y}.png`, (img) => {
+                resolve(img)
+            })
         })
         const c = document.createElement('canvas')
         const ctx = c.getContext('2d')
 
         //CHANGE TABLEAU HITBOX
         myImage = new Image()
-        myImage.src = `levels/${levelX + x - NEUTRAL_POSITION}*${y}.png`
+        myImage.src = `levels/${levelX + x}*${levelY + y}.png`
         await loadImageVanilla(myImage)
         ctx.drawImage(myImage, 0, 0)
         levelContext.data = ctx.getImageData(
@@ -62,7 +66,8 @@ async function MoveToAdjacentScreen(levelContext, x, y) {
             myImage.width,
             myImage.height
         )
-        levelX = levelX + x - NEUTRAL_POSITION
+        levelX = levelX + x
+        levelY = levelY + y
     }
 
     function movePlayerOnScreen(player, x, y) {
