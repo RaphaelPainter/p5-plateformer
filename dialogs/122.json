@@ -1,8 +1,7 @@
 {
-  "pnj": "Mega Corp.",
+  "pnj": "Test.",
   "dialog":[
-    "Je n'aurai jamais cru voir quelqu'un ici un jour",
-    "Que fais-tu ici ? ",
-    "Tu es perdu ?"
+    "Hello sir !",
+    "What a wonderful day, isn't it ? "
   ]
 }
