@@ -7,6 +7,7 @@ class Player {
         this.color = color(255, 204, 0, 255)
         this.collidingPixelColor = undefined
         this.canMove = true
+        this.jumpackVelocity = createVector(0, 0)
     }
 
     //PHYSICS
@@ -22,6 +23,10 @@ class Player {
         if (Math.abs(this.velocity.y) > MAXSPEED.y) {
             this.velocity.y = Math.sign(this.velocity.y) * MAXSPEED.y
         }
+    }
+
+    jumpack() {
+        this.position.add(this.jumpackVelocity)
     }
 
     //DRAW

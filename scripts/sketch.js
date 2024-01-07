@@ -11,11 +11,15 @@ let hitboxCanvas = undefined
 
 const GRAVITY = 0.04
 const FRICTION = 0.05
+const JUMP_PACK_FRICTION = 0.02
 const AIR_FRICTION = 0.006
 
 const BOOST = 0.15
+const JETPACKBOOST = 0.25
 const VELOCITY = 0.005
 const JUMP = 0.4
+
+
 
 let PIXEL_TRIGGER_DIALOG = 185 //dialogs
 let PIXEL_TRIGGER_ACTION = 2

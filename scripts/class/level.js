@@ -61,13 +61,25 @@ class Level {
     }
     friction() {
         const position = this.player.position.copy()
+        //ground            
+
         if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
+            //normal movement
             if (Math.abs(this.player.velocity.x) > FRICTION) {
                 this.player.velocity.x -=
                     Math.sign(this.player.velocity.x) * FRICTION
             } else {
                 this.player.velocity.x = 0
             }
+            //jetpack
+            if (Math.abs(this.player.jumpackVelocity.x) > JUMP_PACK_FRICTION) {
+                this.player.jumpackVelocity.x -=
+                    Math.sign(this.player.jumpackVelocity.x) * JUMP_PACK_FRICTION
+                    
+            } else {
+                this.player.jumpackVelocity.x = 0
+            }
+        //air
         } else {
             if (Math.abs(this.player.velocity.x) > AIR_FRICTION) {
                 this.player.velocity.x -=
@@ -77,9 +89,29 @@ class Level {
             }
         }
     }
+    frictionJetPack() {
+        const position = this.player.position.copy()
+        //ground            
+
+        if (this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
+           
+            //jetpack
+            if (Math.abs(this.player.jumpackVelocity.x) > JUMP_PACK_FRICTION) {
+                this.player.jumpackVelocity.x -=
+                    Math.sign(this.player.jumpackVelocity.x) * JUMP_PACK_FRICTION
+                    
+            } else {
+                this.player.jumpackVelocity.x = 0
+            }
+        //air
+        } else {
+           
+        }
+    }
     step() {
         this.inputsHold()
         this.player.step()
+        this.player.jumpack()
         this.collisions()
         this.gravity()
     }
@@ -100,12 +132,19 @@ class Level {
             }
         }
 
+        const position = this.player.position.copy()
         //MOVE
-        if (key_left.includes(keyCode) && this.player.canMove) {
+        if (key_left.includes(keyCode) && this.player.canMove ) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
+            if(this.player.jumpackVelocity.x > 0 && this.getPixelContent(position.x, position.y + 0.5) == 'ground'){
+                this.player.jumpackVelocity.x = 0
+            }
         }
-        if (key_right.includes(keyCode) && this.player.canMove) {
+        if (key_right.includes(keyCode) && this.player.canMove ) {
             this.player.velocity.x = Math.max(this.player.velocity.x, BOOST)
+            if(this.player.jumpackVelocity.x < 0 && this.getPixelContent(position.x, position.y + 0.5) == 'ground'){
+                this.player.jumpackVelocity.x = 0
+            }
         }
         if (key_jump.includes(keyCode) && this.player.canMove) {
             const position = this.player.position.copy()
@@ -115,9 +154,30 @@ class Level {
                 this.player.velocity.y = -JUMP
             }
         }
+        
     }
     inputsHold() {
         //TODO: change to generic input managing
+        const position = this.player.position.copy()
+        if(keyIsDown(87) && this.player.velocity.x == 0 && this.player.canMove && (keyIsDown(37) || keyIsDown(39)) ){
+            this.player.velocity.y = -JUMP*1.1
+        }
+        if(keyIsDown(87) && this.player.velocity.x < 0 && this.player.canMove){
+            if(this.player.wall){
+                this.player.jumpackVelocity.x = -JETPACKBOOST/4
+            }else{
+                this.player.jumpackVelocity.x = -JETPACKBOOST
+            }
+        }
+        else if(keyIsDown(87) && this.player.velocity.x > 0 && this.player.canMove ){
+            if(this.player.wall){
+                this.player.jumpackVelocity.x = +JETPACKBOOST/4
+            }else{
+                this.player.jumpackVelocity.x = +JETPACKBOOST
+            }
+        } else {
+            this.frictionJetPack()
+        }
         if (keyIsDown(37) && this.player.canMove) {
             this.player.velocity.x -= VELOCITY
         } else if (keyIsDown(39) && this.player.canMove) {
@@ -143,12 +203,14 @@ class Level {
             this.player.collidingPixelColor = collidingPixelColor
         }
 
-        if (velocity.x > 0) {
+        if (velocity.x > 0 || this.player.jumpackVelocity.x > 0) {
             if (
                 this.getPixelContent(position.x + 0.5, position.y) == 'ground'
             ) {
                 this.player.position.x = Math.floor(this.player.position.x)
                 this.player.velocity.x = 0
+                this.player.jumpackVelocity.x = 0
+                this.player.wall = true
             }
         } else {
             if (
@@ -156,15 +218,17 @@ class Level {
             ) {
                 this.player.position.x = Math.ceil(this.player.position.x)
                 this.player.velocity.x = 0
+                this.player.jumpackVelocity.x = 0
+                this.player.wall = true
             }
         }
-
         if (velocity.y > 0) {
             if (
                 this.getPixelContent(position.x, position.y + 0.5) == 'ground'
             ) {
                 this.player.position.y = Math.floor(this.player.position.y)
                 this.player.velocity.y = 0
+                this.player.wall = false
             }
         } else {
             if (
