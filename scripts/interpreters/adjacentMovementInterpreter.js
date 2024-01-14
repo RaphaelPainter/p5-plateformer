@@ -48,7 +48,7 @@ async function MoveToAdjacentScreen(levelContext, x, y) {
     if (changeTableau) {
         //CHANGE TABLEAU DISPLAYED
         levelContext.image = await new Promise((resolve, reject) => {
-            loadImage(`levels/${levelX + x}*${levelY + y}.png`, (img) => {
+            loadImage(`levels/${levelX + x}_${levelY + y}.png`, (img) => {
                 resolve(img)
             })
         })
@@ -57,7 +57,7 @@ async function MoveToAdjacentScreen(levelContext, x, y) {
 
         //CHANGE TABLEAU HITBOX
         myImage = new Image()
-        myImage.src = `levels/${levelX + x}*${levelY + y}.png`
+        myImage.src = `levels/${levelX + x}_${levelY + y}.png`
         await loadImageVanilla(myImage)
         ctx.drawImage(myImage, 0, 0)
         levelContext.data = ctx.getImageData(
