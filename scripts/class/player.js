@@ -8,6 +8,11 @@ class Player {
         this.collidingPixelColor = undefined
         this.canMove = true
         this.jumpackVelocity = createVector(0, 0)
+        this.maxEnergy = 100;
+        this.energy = this.maxEnergy;
+        this.energyConsumptionPerFrame = 1
+        this.energyRegenerationPerFrame = 1
+        this.energyConsumptionPerJump = 40
     }
 
     //PHYSICS
@@ -34,5 +39,9 @@ class Player {
         noStroke();
         fill(this.color)
         rect(this.position.x, this.position.y, 1, 1)
+
+        //jetpack bar
+        fill(color(70,130,180, 100))
+        rect(this.position.x-1, this.position.y-1.5, 0.03*this.energy, 0.5)
     }
 }
