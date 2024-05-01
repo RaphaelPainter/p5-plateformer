@@ -132,7 +132,7 @@ class Level {
 
         const position = this.player.position.copy()
         //MOVE
-        if (key_left.includes(keyCode) && this.player.canMove ) {
+        if (key_left.includes(keyCode) && this.player.canMove) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
             this.player.wallRight == false
             if (
@@ -158,8 +158,10 @@ class Level {
                 this.getPixelContent(position.x, position.y + 0.5) == 'ground'
             ) {
                 this.player.velocity.y = -JUMP
-            }else if(this.player.energy >= this.player.energyConsumptionPerJump){
-                this.player.velocity.y = -JUMP                
+            } else if (
+                this.player.energy >= this.player.energyConsumptionPerJump
+            ) {
+                this.player.velocity.y = -JUMP
                 this.player.energy -= this.player.energyConsumptionPerJump
             }
         }
@@ -168,15 +170,33 @@ class Level {
         //TODO: change to generic input managing
         const position = this.player.position.copy()
         if (
+            keyIsDown(39) &&
+            this.getPixelContent(position.x, position.y + 0.5) == 'ground' &&
+            this.player.jumpackVelocity.x < 0
+        ) {
+            this.player.jumpackVelocity.x = 0
+        } else if (
+            keyIsDown(37) &&
+            this.getPixelContent(position.x, position.y + 0.5) == 'ground' &&
+            this.player.jumpackVelocity.x > 0
+        ) {
+            this.player.jumpackVelocity.x = 0
+        }
+
+        if (
             keyIsDown(87) &&
             this.player.velocity.x == 0 &&
             this.player.canMove &&
-            (keyIsDown(37) || keyIsDown(39)) &&  (this.player.energy > 0) 
+            (keyIsDown(37) || keyIsDown(39)) &&
+            this.player.energy > 0
         ) {
             this.player.velocity.y = -JUMP * 1.1
             this.player.energy -= this.player.energyConsumptionPerFrame
+            this.player.wallClimbing = true
+        } else {
+            this.player.wallClimbing = false
         }
-        console.log(this.player.wallLeft + " " +this.player.wallRight)
+
         if (this.player.energy > 0) {
             if (
                 keyIsDown(87) &&
@@ -184,7 +204,10 @@ class Level {
                 this.player.canMove
             ) {
                 this.player.wallRight = false
-                if ((keyIsDown(39) &&this.player.wallRight) || (keyIsDown(37) && this.player.wallLeft)) {
+                if (
+                    (keyIsDown(39) && this.player.wallRight) ||
+                    (keyIsDown(37) && this.player.wallLeft)
+                ) {
                     this.player.jumpackVelocity.x = -JETPACKBOOST / 4
                     this.player.energy -= this.player.energyConsumptionPerFrame
                 } else {
@@ -215,7 +238,7 @@ class Level {
         } else {
             this.friction()
         }
-        if((!keyIsDown(87)) && this.player.energy < this.player.maxEnergy){
+        if (!keyIsDown(87) && this.player.energy < this.player.maxEnergy) {
             this.player.energy += this.player.energyRegenerationPerFrame
         }
     }
@@ -245,7 +268,7 @@ class Level {
                 this.player.velocity.x = 0
                 this.player.jumpackVelocity.x = 0
                 this.player.wallRight = true
-            } 
+            }
         } else {
             if (
                 this.getPixelContent(position.x - 0.5, position.y - 0.5) ==
