@@ -47,7 +47,7 @@ async function MoveToAdjacentScreen(levelContext, x, y) {
     }
     if (changeTableau) {
         //CHANGE TABLEAU DISPLAYED
-        levelContext.image = await new Promise((resolve, reject) => {
+        levelContext.mask = await new Promise((resolve, reject) => {
             loadImage(`levels/${levelX + x}_${levelY + y}.png`, (img) => {
                 resolve(img)
             })

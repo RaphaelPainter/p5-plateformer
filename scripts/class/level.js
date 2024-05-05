@@ -10,14 +10,14 @@ let levelY = 0
 
 class Level {
     //INIT
-    constructor(index, height, width, data, image) {
+    constructor(index, height, width, data, mask, displayedImage) {
         this.index = index
         this.height = height
         this.width = width
         this.data = data
-        this.image = image
+        this.mask = mask
         this.player = new Player(this.getStartingPosition(), createVector(0, 0))
-        this.dialogSystem = new DialogSystem(this.image)
+        this.dialogSystem = new DialogSystem(this.mask)
         dialogContext = this
     }
     getStartingPosition() {
@@ -129,12 +129,13 @@ class Level {
                 this.dialogSystem.resetLine()
             }
         }
-
         const position = this.player.position.copy()
         //MOVE
+        if( key_left.includes(keyCode)){
+            this.player.wallRight == false
+        }
         if (key_left.includes(keyCode) && this.player.canMove) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
-            this.player.wallRight == false
             if (
                 this.player.jumpackVelocity.x > 0 &&
                 this.getPixelContent(position.x, position.y + 0.5) == 'ground'
@@ -142,9 +143,11 @@ class Level {
                 this.player.jumpackVelocity.x = 0
             }
         }
+        if( key_right.includes(keyCode)){
+            this.player.wallLeft == false
+        }
         if (key_right.includes(keyCode) && this.player.canMove) {
             this.player.velocity.x = Math.max(this.player.velocity.x, BOOST)
-            this.player.wallLeft == false
             if (
                 this.player.jumpackVelocity.x < 0 &&
                 this.getPixelContent(position.x, position.y + 0.5) == 'ground'
@@ -158,6 +161,9 @@ class Level {
                 this.getPixelContent(position.x, position.y + 0.5) == 'ground'
             ) {
                 this.player.velocity.y = -JUMP
+            } else if (this.player.wallLeft || this.player.wallRight) {
+                //TODO : walljump !
+                console.log("walljumpLeft")
             } else if (
                 this.player.energy >= this.player.energyConsumptionPerJump
             ) {
@@ -291,7 +297,7 @@ class Level {
             }
         } else {
             if (
-                this.getPixelContent(position.x, position.y - 0.5) == 'ground'
+                this.getPixelContent(position.x, position.y - 0.5) == 'ceiling'
             ) {
                 this.player.position.y = Math.ceil(this.player.position.y)
                 this.player.velocity.y = 0
@@ -331,13 +337,13 @@ class Level {
         context.webkitImageSmoothingEnabled = false
         context.msImageSmoothingEnabled = false
         context.imageSmoothingEnabled = false
-        image(this.image, 0, 0)
+        clear()
+        image(this.mask, 0, 0)
 
         //TODO: draw level overlay
-
         this.player.draw()
         noStroke()
-        this.dialogSystem.draw(this.player.position, this.image)
+        this.dialogSystem.draw(this.player.position, this.mask)
     }
 }
 

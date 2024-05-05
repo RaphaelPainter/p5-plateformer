@@ -32,18 +32,16 @@ function keyPressed() {
 
 async function prepareLevel(index) {
     // load image and prepare level state
-    img = await loadImageSync(`levels/0_0.png`)
-    //image(img, 0, 0)
+    mask = await loadImageSync(`levels/0_0.png`)
     const c = document.createElement('canvas')
     const ctx = c.getContext('2d')
     ctx.drawImage(myImage, 0, 0)
     const data = ctx.getImageData(0, 0, myImage.width, myImage.height)
-    //image(img, 0, 0)
 
     // update current rendering ratio
-    drawRatio = wHeight / img.height
+    drawRatio = wHeight / mask.height
 
-    return new Level(index, img.height, img.width, data, img)
+    return new Level(index, mask.height, mask.width, data, mask)
 }
 
 async function loadImageSync(source) {
@@ -76,6 +74,7 @@ async function setup() {
     COLORS = {
         'rgba(255,255,255,1)': 'void',
         'rgba(0,0,0,1)': 'ground',
+        'rgba(31,14,0,1)': 'ceiling',
         'rgba(0,255,0,1)': 'start',
         'rgba(255,0,0,1)': 'end',
     }
