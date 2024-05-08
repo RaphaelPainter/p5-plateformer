@@ -6,7 +6,7 @@
 -   dessiner une map simple (prairie)
 -   faire le mask associé
 
--   walljump
+-   walljump: ajouter un freeze
 
 -   Ajouter un effet à la tekken pour montrer
     la conso et la regen

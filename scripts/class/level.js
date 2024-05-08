@@ -164,6 +164,11 @@ class Level {
             } else if (this.player.wallLeft || this.player.wallRight) {
                 //TODO : walljump !
                 console.log("walljumpLeft")
+                this.player.velocity.y = -JUMP  *1.2        
+                this.player.velocity.x = 1.6*JUMP * (this.player.wallLeft ? 1:-1)
+                this.player.wallLeft = false;
+                this.player.wallRight = false;
+
             } else if (
                 this.player.energy >= this.player.energyConsumptionPerJump
             ) {
