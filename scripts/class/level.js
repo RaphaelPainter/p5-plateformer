@@ -47,17 +47,25 @@ class Level {
     //PHYSICS
     gravity() {
         const position = this.player.position.copy()
-        position.y += 1
 
         const clamped = createVector(
             Math.round(position.x),
             Math.round(position.y)
         )
         const content = this.getPixelContent(clamped.x, clamped.y)
-
         if (content != 'ground') {
+            if ((this.player.wallLeft || this.player.wallRight) && this.player.walljumpedCounter > 0 && this.player.velocity.y > 0 ) {
+                this.player.velocity.add(0, GRAVITY/500)
+            }
+            this.player.grounded = false
             this.player.velocity.add(0, GRAVITY)
+        } else {
+            this.player.grounded = true
+
+            this.player.walljumped = false
         }
+
+        console.log(this.player.velocity.x)
     }
     friction() {
         const position = this.player.position.copy()
@@ -119,7 +127,7 @@ class Level {
         //INTERRACTIONS
         if (
             this.player.collidingPixelColor[0] == PIXEL_TRIGGER_DIALOG &&
-            keyIsDown(87)
+            keyIsDown(87) && this.player.jumpackVelocity.x == 0 && !key_right.includes(keyCode) && !key_left.includes(keyCode)
         ) {
             if (this.dialogSystem.dialog && !this.dialogSystem.isLastLine()) {
                 this.player.canMove = false
@@ -127,11 +135,13 @@ class Level {
             } else {
                 this.player.canMove = true
                 this.dialogSystem.resetLine()
+
             }
+
         }
         const position = this.player.position.copy()
         //MOVE
-        if( key_left.includes(keyCode)){
+        if (key_left.includes(keyCode)) {
             this.player.wallRight == false
         }
         if (key_left.includes(keyCode) && this.player.canMove) {
@@ -143,7 +153,7 @@ class Level {
                 this.player.jumpackVelocity.x = 0
             }
         }
-        if( key_right.includes(keyCode)){
+        if (key_right.includes(keyCode)) {
             this.player.wallLeft == false
         }
         if (key_right.includes(keyCode) && this.player.canMove) {
@@ -162,13 +172,11 @@ class Level {
             ) {
                 this.player.velocity.y = -JUMP
             } else if (this.player.wallLeft || this.player.wallRight) {
-                //TODO : walljump !
-                console.log("walljumpLeft")
-                this.player.velocity.y = -JUMP  *1.2        
-                this.player.velocity.x = 1.6*JUMP * (this.player.wallLeft ? 1:-1)
-                this.player.wallLeft = false;
-                this.player.wallRight = false;
-
+                this.player.velocity.y = -JUMP * 1.1
+                this.player.velocity.x = 0.3 * (this.player.wallLeft ? 1 : -1)
+                this.player.wallLeft = false
+                this.player.wallRight = false
+                this.player.walljumped = true
             } else if (
                 this.player.energy >= this.player.energyConsumptionPerJump
             ) {
@@ -279,6 +287,7 @@ class Level {
                 this.player.velocity.x = 0
                 this.player.jumpackVelocity.x = 0
                 this.player.wallRight = true
+                this.player.walljumpedCounter = 1
             }
         } else {
             if (
@@ -289,6 +298,7 @@ class Level {
                 this.player.velocity.x = 0
                 this.player.jumpackVelocity.x = 0
                 this.player.wallLeft = true
+                this.player.walljumpedCounter = 1
             }
         }
         if (velocity.y > 0) {
