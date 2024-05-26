@@ -54,18 +54,18 @@ class Level {
         )
         const content = this.getPixelContent(clamped.x, clamped.y)
         if (content != 'ground') {
-            if ((this.player.wallLeft || this.player.wallRight) && this.player.walljumpedCounter > 0 && this.player.velocity.y > 0 ) {
+            if ((this.player.wallLeft || this.player.wallRight) && this.player.walljumpedCounter > 0 && this.player.velocity.y > 0 && this.player.velocity.x == 0 ) {
                 this.player.velocity.add(0, GRAVITY/500)
+            }else{
+                this.player.velocity.add(0, GRAVITY)
             }
             this.player.grounded = false
-            this.player.velocity.add(0, GRAVITY)
         } else {
             this.player.grounded = true
 
             this.player.walljumped = false
         }
 
-        console.log(this.player.velocity.x)
     }
     friction() {
         const position = this.player.position.copy()
@@ -135,14 +135,12 @@ class Level {
             } else {
                 this.player.canMove = true
                 this.dialogSystem.resetLine()
-
             }
-
         }
         const position = this.player.position.copy()
         //MOVE
         if (key_left.includes(keyCode)) {
-            this.player.wallRight == false
+            this.player.wallRight = false
         }
         if (key_left.includes(keyCode) && this.player.canMove) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
@@ -154,7 +152,7 @@ class Level {
             }
         }
         if (key_right.includes(keyCode)) {
-            this.player.wallLeft == false
+            this.player.wallLeft = false
         }
         if (key_right.includes(keyCode) && this.player.canMove) {
             this.player.velocity.x = Math.max(this.player.velocity.x, BOOST)
@@ -201,13 +199,12 @@ class Level {
         ) {
             this.player.jumpackVelocity.x = 0
         }
-
         if (
             keyIsDown(87) &&
             this.player.velocity.x == 0 &&
             this.player.canMove &&
             (keyIsDown(37) || keyIsDown(39)) &&
-            this.player.energy > 0
+            this.player.energy > 0 && (this.player.wallLeft || this.player.wallRight)
         ) {
             this.player.velocity.y = -JUMP * 1.1
             this.player.energy -= this.player.energyConsumptionPerFrame
@@ -257,7 +254,7 @@ class Level {
         } else {
             this.friction()
         }
-        if (!keyIsDown(87) && this.player.energy < this.player.maxEnergy) {
+        if (!keyIsDown(87) && this.player.energy < this.player.maxEnergy && this.getPixelContent(position.x, position.y + 0.5) == 'ground') {
             this.player.energy += this.player.energyRegenerationPerFrame
         }
     }
@@ -277,7 +274,6 @@ class Level {
         ) {
             this.player.collidingPixelColor = collidingPixelColor
         }
-
         if (velocity.x > 0 || this.player.jumpackVelocity.x > 0) {
             if (
                 this.getPixelContent(position.x + 0.5, position.y - 0.5) ==
@@ -307,8 +303,8 @@ class Level {
             ) {
                 this.player.position.y = Math.floor(this.player.position.y)
                 this.player.velocity.y = 0
-                this.player.wallRight = false
-                this.player.wallLeft = false
+                //this.player.wallRight = false
+                //this.player.wallLeft = false
             }
         } else {
             if (
@@ -331,6 +327,9 @@ class Level {
         ) {
             let dialogId = this.player.collidingPixelColor[1]
             this.dialogSystem.currentDialogId = dialogId
+            this.player.jumpackVelocity = createVector(0,0)
+            this.player.velocity = createVector(0,0)
+
             loadJSON('./dialogs/' + dialogId + '.json', jsonCallback)
         } else if (this.player.collidingPixelColor[0] == PIXEL_TRIGGER_ACTION) {
             if (

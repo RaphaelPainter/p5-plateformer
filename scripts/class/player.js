@@ -31,9 +31,9 @@ class Player {
     step() {
         this.position.add(this.velocity)
 
-        const MAXSPEED = createVector(0.2, 1.0)
+        const MAXSPEED = createVector(0.4, 1.0)
 
-        if (Math.abs(this.velocity.x) > MAXSPEED.x && !this.walljumped) {
+        if (Math.abs(this.velocity.x) > MAXSPEED.x ) {
             this.velocity.x = Math.sign(this.velocity.x) * MAXSPEED.x
         }
 

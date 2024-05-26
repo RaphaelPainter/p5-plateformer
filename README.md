@@ -13,6 +13,4 @@
 
 BUG
 
--   vitesse max avec le jetpack
--   pb de saut quand on sort d'un dialog avec un pnj (disable jetpack start when colliding with pnj)
--   regen jumpack seulement quand au sol
+-   pb de jetpackX qui se désactive après chaque dash contre une butée.
