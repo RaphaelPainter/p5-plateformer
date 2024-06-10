@@ -1,5 +1,5 @@
 -   camera qui suit des balises
-
+- grab and throw 
 -   créer sprite animée
 -   intégrer sprite player animée (toggle on/off)
 

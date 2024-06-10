@@ -21,8 +21,8 @@ class Player {
         this.walljumped = false
         this.walljumpedCounter = 0
         setInterval(() => {
-            if(this.walljumpedCounter >= 1){
-                this.walljumpedCounter--;
+            if (this.walljumpedCounter >= 1) {
+                this.walljumpedCounter--
             }
         }, 500)
     }
@@ -33,7 +33,7 @@ class Player {
 
         const MAXSPEED = createVector(0.4, 1.0)
 
-        if (Math.abs(this.velocity.x) > MAXSPEED.x ) {
+        if (Math.abs(this.velocity.x) > MAXSPEED.x) {
             this.velocity.x = Math.sign(this.velocity.x) * MAXSPEED.x
         }
 
@@ -75,7 +75,15 @@ class Player {
         })
 
         //player
+        if (this.velocity.x > 0 || this.jumpackVelocity.x > 0) {
+            this.color = color(255, 204, 0, 255)
+        } else if (this.velocity.x < 0 || this.jumpackVelocity.x < 0) {
+            this.color = color(100, 204, 0, 255)
+        } else {
+            this.color = color(100, 100, 0, 255)
+        }
         fill(this.color)
+
         rect(this.position.x, this.position.y, 1, 1)
 
         //jetpack bar

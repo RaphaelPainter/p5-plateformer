@@ -19,8 +19,6 @@ const JETPACKBOOST = 0.25
 const VELOCITY = 0.005
 const JUMP = 0.4
 
-
-
 let PIXEL_TRIGGER_DIALOG = 185 //dialogs
 let PIXEL_TRIGGER_ACTION = 2
 
@@ -77,6 +75,7 @@ async function setup() {
         'rgba(31,14,0,1)': 'ceiling',
         'rgba(0,255,0,1)': 'start',
         'rgba(255,0,0,1)': 'end',
+        'rgba(159,160,160,1)': 'step',
     }
 
     textSize(2)
