@@ -19,6 +19,45 @@ const JETPACKBOOST = 0.25
 const VELOCITY = 0.005
 const JUMP = 0.4
 
+
+// Arrow keycode constants
+const KEYCODE_ARROW_UP = 38;
+const KEYCODE_ARROW_DOWN = 40;
+const KEYCODE_ARROW_LEFT = 37;
+const KEYCODE_ARROW_RIGHT = 39;
+
+// Letter keycode constants
+const KEYCODE_A = 65;
+const KEYCODE_B = 66;
+const KEYCODE_C = 67;
+const KEYCODE_D = 68;
+const KEYCODE_E = 69;
+const KEYCODE_F = 70;
+const KEYCODE_G = 71;
+const KEYCODE_H = 72;
+const KEYCODE_I = 73;
+const KEYCODE_J = 74;
+const KEYCODE_K = 75;
+const KEYCODE_L = 76;
+const KEYCODE_M = 77;
+const KEYCODE_N = 78;
+const KEYCODE_O = 79;
+const KEYCODE_P = 80;
+const KEYCODE_Q = 81;
+const KEYCODE_R = 82;
+const KEYCODE_S = 83;
+const KEYCODE_T = 84;
+const KEYCODE_U = 85;
+const KEYCODE_V = 86;
+const KEYCODE_W = 87;
+const KEYCODE_X = 88;
+const KEYCODE_Y = 89;
+const KEYCODE_Z = 90;
+
+// Additional keycode constants
+const KEYCODE_SPACE = 32;
+const KEYCODE_SHIFT = 16;
+
 let PIXEL_TRIGGER_DIALOG = 185 //dialogs
 let PIXEL_TRIGGER_ACTION = 2
 
@@ -38,8 +77,11 @@ async function prepareLevel(index) {
 
     // update current rendering ratio
     drawRatio = wHeight / mask.height
-
-    return new Level(index, mask.height, mask.width, data, mask)
+    playerSprites = []
+    playerSprites[0] = await loadImageSync(`characters/demon_1.png`)
+    playerSprites[1] = await loadImageSync(`characters/demon_2.png`)
+    shadowSprite = await loadImageSync(`characters/demon_shadow.png`)
+    return new Level(index, mask.height, mask.width, data, mask, playerSprites, shadowSprite)
 }
 
 async function loadImageSync(source) {
@@ -75,7 +117,7 @@ async function setup() {
         'rgba(31,14,0,1)': 'ceiling',
         'rgba(0,255,0,1)': 'start',
         'rgba(255,0,0,1)': 'end',
-        'rgba(159,160,160,1)': 'step',
+        'rgba(145,142,142,1)': 'step',
     }
 
     textSize(2)
@@ -89,6 +131,7 @@ async function setup() {
 }
 
 function draw() {
+    
     if (!level) return
     level.step()
     level.draw()

@@ -1,7 +1,3 @@
-let key_jump = [32, 16]
-let key_left = [37]
-let key_right = [39]
-let key_talk = [87]
 let json
 let dialogContext = undefined
 
@@ -10,13 +6,18 @@ let levelY = 0
 
 class Level {
     //INIT
-    constructor(index, height, width, data, mask, displayedImage) {
+    constructor(index, height, width, data, mask, playerSprites, shadowSprite) {
         this.index = index
         this.height = height
         this.width = width
         this.data = data
         this.mask = mask
-        this.player = new Player(this.getStartingPosition(), createVector(0, 0))
+        this.player = new Player(
+            this.getStartingPosition(),
+            createVector(0, 0),
+            playerSprites,
+            shadowSprite
+        )
         this.dialogSystem = new DialogSystem(this.mask)
         dialogContext = this
     }
@@ -31,6 +32,8 @@ class Level {
         }
         return createVector(10, 10)
     }
+
+    //TODO : get all camera points (position, + distance of attraction)
 
     //IMAGE DATA
     getPixelColor(x, y) {
@@ -136,8 +139,8 @@ class Level {
             this.player.collidingPixelColor[0] == PIXEL_TRIGGER_DIALOG &&
             keyIsDown(87) &&
             this.player.jumpackVelocity.x == 0 &&
-            !key_right.includes(keyCode) &&
-            !key_left.includes(keyCode)
+            !(keyCode == KEYCODE_ARROW_RIGHT) &&
+            !(keyCode == KEYCODE_ARROW_LEFT)
         ) {
             if (this.dialogSystem.dialog && !this.dialogSystem.isLastLine()) {
                 this.player.canMove = false
@@ -149,10 +152,10 @@ class Level {
         }
         const position = this.player.position.copy()
         //MOVE
-        if (key_left.includes(keyCode)) {
+        if (keyCode == KEYCODE_ARROW_LEFT) {
             this.player.wallRight = false
         }
-        if (key_left.includes(keyCode) && this.player.canMove) {
+        if (keyCode == KEYCODE_ARROW_LEFT && this.player.canMove) {
             this.player.velocity.x = Math.min(this.player.velocity.x, -BOOST)
             if (
                 this.player.jumpackVelocity.x > 0 &&
@@ -161,10 +164,10 @@ class Level {
                 this.player.jumpackVelocity.x = 0
             }
         }
-        if (key_right.includes(keyCode)) {
+        if (keyCode == KEYCODE_ARROW_RIGHT) {
             this.player.wallLeft = false
         }
-        if (key_right.includes(keyCode) && this.player.canMove) {
+        if (keyCode == KEYCODE_ARROW_RIGHT && this.player.canMove) {
             this.player.velocity.x = Math.max(this.player.velocity.x, BOOST)
             if (
                 this.player.jumpackVelocity.x < 0 &&
@@ -173,7 +176,7 @@ class Level {
                 this.player.jumpackVelocity.x = 0
             }
         }
-        if (key_jump.includes(keyCode) && this.player.canMove) {
+        if (keyCode == KEYCODE_SHIFT && this.player.canMove) {
             const position = this.player.position.copy()
             if (
                 this.getPixelContent(position.x, position.y + 0.5) == 'ground'
@@ -181,7 +184,8 @@ class Level {
                 this.player.velocity.y = -JUMP
             } else if (this.player.wallLeft || this.player.wallRight) {
                 this.player.velocity.y = -JUMP * 1.1
-                this.player.velocity.x = 0.3 * (this.player.wallLeft ? 1 : -1)
+                this.player.jumpackVelocity.x =
+                    0.3 * (this.player.wallLeft ? 1 : -1)
                 this.player.wallLeft = false
                 this.player.wallRight = false
                 this.player.walljumped = true
@@ -197,43 +201,63 @@ class Level {
         //TODO: change to generic input managing
         const position = this.player.position.copy()
         if (
-            keyIsDown(39) &&
+            keyIsDown(KEYCODE_ARROW_RIGHT) &&
             this.getPixelContent(position.x, position.y + 0.5) == 'ground' &&
             this.player.jumpackVelocity.x < 0
         ) {
             this.player.jumpackVelocity.x = 0
         } else if (
-            keyIsDown(37) &&
+            keyIsDown(KEYCODE_ARROW_LEFT) &&
             this.getPixelContent(position.x, position.y + 0.5) == 'ground' &&
             this.player.jumpackVelocity.x > 0
         ) {
             this.player.jumpackVelocity.x = 0
         }
+        if(this.player.canMove){
+            console.log("blah")
+        }
         if (
-            keyIsDown(87) &&
+            keyIsDown(KEYCODE_W) &&
             this.player.velocity.x == 0 &&
             this.player.canMove &&
-            (keyIsDown(37) || keyIsDown(39)) &&
+            (keyIsDown(KEYCODE_ARROW_LEFT) || keyIsDown(KEYCODE_ARROW_RIGHT)) &&
             this.player.energy > 0 &&
             (this.player.wallLeft || this.player.wallRight)
         ) {
             this.player.velocity.y = -JUMP * 1.1
             this.player.energy -= this.player.energyConsumptionPerFrame
             this.player.wallClimbing = true
+        } else if (
+            !keyIsDown(KEYCODE_W) &&
+            this.player.velocity.x == 0 &&
+            this.player.canMove &&
+            (keyIsDown(KEYCODE_ARROW_LEFT) || keyIsDown(KEYCODE_ARROW_RIGHT)) &&
+            this.getPixelContent(position.x, position.y + 0.5) == 'ground' &&
+            this.getPixelContent(position.x - 1, position.y - 1) != 'ground' &&
+            this.getPixelContent(position.x + 1, position.y - 1) != 'ground' &&
+            (this.player.wallLeft || this.player.wallRight)
+        ) {
+            this.player.animationIndex = 0
+            this.player.canMove = false
+            setTimeout(() => {
+                this.player.canMove = true
+
+                this.player.velocity.y = -JUMP * 0.7
+            }, 75)
         } else {
             this.player.wallClimbing = false
         }
 
         if (this.player.energy > 0) {
             if (
-                keyIsDown(87) &&
+                keyIsDown(KEYCODE_W) &&
                 this.player.velocity.x < 0 &&
                 this.player.canMove
             ) {
                 this.player.wallRight = false
                 if (
-                    (keyIsDown(39) && this.player.wallRight) ||
-                    (keyIsDown(37) && this.player.wallLeft)
+                    (keyIsDown(KEYCODE_ARROW_RIGHT) && this.player.wallRight) ||
+                    (keyIsDown(KEYCODE_ARROW_LEFT) && this.player.wallLeft)
                 ) {
                     this.player.jumpackVelocity.x = -JETPACKBOOST / 4
                     this.player.energy -= this.player.energyConsumptionPerFrame
@@ -242,7 +266,7 @@ class Level {
                     this.player.energy -= this.player.energyConsumptionPerFrame
                 }
             } else if (
-                keyIsDown(87) &&
+                keyIsDown(KEYCODE_W) &&
                 this.player.velocity.x > 0 &&
                 this.player.canMove
             ) {
@@ -255,18 +279,18 @@ class Level {
                     this.player.energy -= this.player.energyConsumptionPerFrame
                 }
             }
-        } else {
-            this.frictionJetPack()
         }
-        if (keyIsDown(37) && this.player.canMove) {
+        this.frictionJetPack()
+
+        if (keyIsDown(KEYCODE_ARROW_LEFT) && this.player.canMove) {
             this.player.velocity.x -= VELOCITY
-        } else if (keyIsDown(39) && this.player.canMove) {
+        } else if (keyIsDown(KEYCODE_ARROW_RIGHT) && this.player.canMove) {
             this.player.velocity.x += VELOCITY
         } else {
             this.friction()
         }
         if (
-            !keyIsDown(87) &&
+            !keyIsDown(KEYCODE_W) &&
             this.player.energy < this.player.maxEnergy &&
             this.getPixelContent(position.x, position.y + 0.5) == 'ground'
         ) {
@@ -289,15 +313,19 @@ class Level {
         ) {
             this.player.collidingPixelColor = collidingPixelColor
         }
+        console.log(velocity.x)
+
         if (velocity.x > 0 || this.player.jumpackVelocity.x > 0) {
             if (
                 this.getPixelContent(position.x + 0.5, position.y - 0.5) ==
                 'ground'
             ) {
-                this.player.position.x = Math.floor(this.player.position.x)
                 this.player.velocity.x = 0
+
+                this.player.position.x = Math.floor(this.player.position.x)
                 this.player.jumpackVelocity.x = 0
                 this.player.wallRight = true
+
                 this.player.walljumpedCounter = 1
             }
             if (
@@ -312,7 +340,7 @@ class Level {
                 this.player.jumpackVelocity.x = 0.08
                 this.player.stepped = true
             }
-        } else {
+        } if((velocity.x < 0 || this.player.jumpackVelocity.x < 0)) {
             if (
                 this.getPixelContent(position.x - 0.5, position.y - 0.5) ==
                 'ground'
@@ -383,11 +411,26 @@ class Level {
 
     //DRAW
     draw() {
+        // Apply zoom
         context.scale(drawRatio, drawRatio)
         context.mozImageSmoothingEnabled = false
         context.webkitImageSmoothingEnabled = false
         context.msImageSmoothingEnabled = false
         context.imageSmoothingEnabled = false
+
+        //TODO: process camera position according to nearest enable camera point
+
+        const zoom = 1.5
+        // Translate the canvas based on the player's position
+        translate(
+            this.width / 2 - this.player.position.x * zoom,
+            this.height / 2 - this.player.position.y * zoom
+        )
+
+        // Apply zoom
+        scale(zoom)
+        //scale(2); // Apply the zoom factor
+
         clear()
         image(this.mask, 0, 0)
 
