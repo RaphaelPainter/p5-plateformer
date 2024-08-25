@@ -6,6 +6,9 @@ FEATURES
 -   Ajouter un effet à la tekken pour montrer
     la conso et la regen
 -   jetpackbar visible alors qu'on ne dash pas.
+-   quand on tombe de trop haut, on s'enfonce dans le sol
+-   si on saute alors qu'on marche vers une marche, alors
+    on avance automatiquement
 
 BUG
 
@@ -13,6 +16,7 @@ BUG
 -   pas de regen jetpack quand on maintient W et qu'on ne bouge pas.
 -   animation qui bouge un peu, ou pas : il faut choisir
 -   on est parfois bloqués quand on parle à un pnj
+-   réparer l'affichage des dialogues pour qu'il dépende du zoom
 
 ANIMATION
 
@@ -20,7 +24,7 @@ ANIMATION
 -   toggle sprite on/off
 -   crouch animation
 -   look above animation
--   dashing trail
+-   dashing trail : rose.. genre ça dépend du perso du joueur
 
 LEVEL DESIGN
 
@@ -29,3 +33,9 @@ LEVEL DESIGN
 LORE
 
 -   Two flying boats (a big and a small) separated by small floating islands.
+-   raggedy ann
+
+CONTROLS
+
+-   double arrow for dashing
+-   up arrow for jumping

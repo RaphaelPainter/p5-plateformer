@@ -420,10 +420,10 @@ class Level {
 
         //TODO: process camera position according to nearest enable camera point
 
-        const zoom = 1.5
+        const zoom = 7
         // Translate the canvas based on the player's position
         translate(
-            this.width / 2 - this.player.position.x * zoom,
+            this.width - this.player.position.x * zoom-10,
             this.height / 2 - this.player.position.y * zoom
         )
 
@@ -436,8 +436,9 @@ class Level {
 
         //TODO: draw level overlay
         this.player.draw()
-        noStroke()
         this.dialogSystem.draw(this.player.position, this.mask)
+
+        noStroke()
     }
 }
 

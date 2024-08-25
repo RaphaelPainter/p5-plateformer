@@ -81,6 +81,7 @@ async function prepareLevel(index) {
     playerSprites[0] = await loadImageSync(`characters/demon_1.png`)
     playerSprites[1] = await loadImageSync(`characters/demon_2.png`)
     shadowSprite = await loadImageSync(`characters/demon_shadow.png`)
+
     return new Level(index, mask.height, mask.width, data, mask, playerSprites, shadowSprite)
 }
 
@@ -107,7 +108,7 @@ async function preload() {
 }
 
 async function setup() {
-    hitboxCanvas = createCanvas(wHeight, wHeight)
+    hitboxCanvas = createCanvas(wWidth, wHeight)
     context = canvas.getContext('2d')
     context.clearRect(0, 0, canvas.width, canvas.height)
 
